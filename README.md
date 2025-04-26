@@ -1,1 +1,1 @@
-Interacting with Linux KVM
+Interacting with the KVM kernel module in linux

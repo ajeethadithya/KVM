@@ -17,23 +17,18 @@
  */
 
 void* mem_alloc() {
-
 	void *mem_addr;
 	mem_addr = mmap(NULL, PAGE_SIZE, PROT_READ | PROT_WRITE | PROT_EXEC, MAP_ANONYMOUS | MAP_PRIVATE, -1, 0);
 	if(mem_addr == MAP_FAILED) {
 		perror("Memory map failed");
 		return NULL;
-	}
-	
+	}	
 	strcpy((char *)mem_addr, "hello from mmap!");
 	printf("%s\n", (char *)mem_addr);
-
 	return mem_addr;
-
 }
 
-void mem_dealloc(void *mem_addr) {
-	
+void mem_dealloc(void *mem_addr) {	
 	munmap(mem_addr, PAGE_SIZE);
 	printf("Memory deallocated\n");
 }
