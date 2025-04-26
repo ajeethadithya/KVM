@@ -10,7 +10,8 @@ int main(void) {
 	int api_version;
 	int kvm_fd, vm_fd, vcpu_fd;
 	void *mem_addr;
-	struct kvm_regs* regs;
+	struct kvm_regs* regs = NULL;
+	struct kvm_sregs* sregs = NULL;
 	int rc = EXIT_FAILURE;
 	
 	printf("Page size: %d\n", PAGE_SIZE);
@@ -52,15 +53,21 @@ int main(void) {
 	/* Deallocate memory created by mmap */
 	mem_dealloc(mem_addr);
 
-	/* Get the vCPU registers */
+	/* Get the generral purpose registers */
 	regs = kvm_get_vcpu_regs(vcpu_fd);
 	if(regs == NULL) {
 		perror("Failed to get the vCPU registers");
 		goto out;
 	}
+	/* Get the vCPU system registers */
+        sregs = kvm_get_vcpu_sregs(vcpu_fd);
+        if(sregs == NULL) {
+                perror("Failed to get the vCPU registers");
+                goto out;
+        }
 
 	/* Print the vCPU registers */
-	kvm_print_vcpu_regs(regs);
+	kvm_print_vcpu_regs(regs, sregs);
 
 	printf("kvm_fd: %d\n", kvm_fd);
 	printf("API version: %d\n", api_version);
@@ -73,6 +80,7 @@ out:
 	(void)close(vm_fd);
 	(void)close(vcpu_fd);
 	free(regs);
+	free(sregs);
 
 	return rc;
 }
