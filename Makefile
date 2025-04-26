@@ -1,7 +1,7 @@
 all:
-	@gcc -o kvm kvm.c
+	@gcc main.c kvm.c -o main
 	@echo "Successfully compiled!"
 run:
-	@./kvm
+	@./main
 clean:
-	@rm -f kvm
+	@rm -f main
