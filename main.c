@@ -48,6 +48,7 @@ int main(void) {
 	}
 
 	mem_dealloc(mem_addr);
+	int ret = kvm_get_vcpu_regs(vcpu_fd);
 
 	printf("kvm_fd: %d\n", kvm_fd);
 	printf("API version: %d\n", api_version);
