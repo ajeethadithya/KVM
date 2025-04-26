@@ -10,6 +10,7 @@ int main(void) {
 	int api_version;
 	int kvm_fd, vm_fd, vcpu_fd;
 	void *mem_addr;
+	struct kvm_regs regs;
 	int rc = EXIT_FAILURE;
 	
 	printf("Page size: %d\n", PAGE_SIZE);
@@ -48,7 +49,8 @@ int main(void) {
 	}
 
 	mem_dealloc(mem_addr);
-	int ret = kvm_get_vcpu_regs(vcpu_fd);
+	regs = kvm_get_vcpu_regs(vcpu_fd);
+	kvm_print_vcpu_regs(regs);
 
 	printf("kvm_fd: %d\n", kvm_fd);
 	printf("API version: %d\n", api_version);
