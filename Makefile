@@ -1,5 +1,5 @@
 all:
-	@gcc main.c kvm.c -o main
+	@gcc main.c kvm.c mem.c -o main
 	@echo "Successfully compiled!"
 run:
 	@./main

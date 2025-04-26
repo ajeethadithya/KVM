@@ -2,11 +2,14 @@
 #include <stdlib.h>
 #include <fcntl.h>
 #include <unistd.h>
+#include <string.h>
 #include "kvm.h"
+#include "mem.h"
 
 int main(void) {
-	int kvm_fd, vm_fd, vcpu_fd;
 	int api_version;
+	int kvm_fd, vm_fd, vcpu_fd;
+	void *mem_addr;
 	int rc = EXIT_FAILURE;
 	
 	printf("Page size: %d\n", PAGE_SIZE);
@@ -37,6 +40,14 @@ int main(void) {
 		goto out;
 	}	
 
+
+	mem_addr = mem_alloc();
+	if(mem_addr == NULL) {
+		perror("Failed to allocate memory");
+		goto out;
+	}
+
+	mem_dealloc(mem_addr);
 
 	printf("kvm_fd: %d\n", kvm_fd);
 	printf("API version: %d\n", api_version);
