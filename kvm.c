@@ -1,8 +1,12 @@
 #include <stdio.h>
 #include <stdlib.h>
+#include <stdint.h>
 #include <sys/ioctl.h>
 #include <linux/kvm.h>
 #include "kvm.h"
+
+struct kvm_userspace_memory_region region;
+
 int kvm_api_version(int kvm_fd) {
 	int api_version;
 	api_version = ioctl(kvm_fd, KVM_GET_API_VERSION, NULL);
@@ -21,6 +25,38 @@ int kvm_create_vcpu(int vm_fd) {
 	
 	vcpu_fd = ioctl(vm_fd, KVM_CREATE_VCPU, 0);
 	return vcpu_fd;
+}
+
+int kvm_initialize_region(int vm_fd, void* guest_addr) {
+        int ret;
+//        struct kvm_userspace_memory_region region;
+
+        region.slot = 0;
+        region.flags = 0;
+        region.guest_phys_addr = 0x100000;
+        region.memory_size = PAGE_SIZE;
+        region.userspace_addr = (uint64_t)guest_addr;
+
+        ret = ioctl(vm_fd, KVM_SET_USER_MEMORY_REGION, &region);
+        return ret;
+}
+
+struct kvm_regs* kvm_get_vcpu_regs(int vcpu_fd) {
+        struct kvm_regs* regs;
+        regs = malloc(sizeof(struct kvm_regs));
+        if(regs == NULL || ioctl(vcpu_fd, KVM_GET_REGS, regs) < 0) {
+                return NULL;
+        }
+        return regs;
+}
+
+struct kvm_sregs* kvm_get_vcpu_sregs(int vcpu_fd) {
+        struct kvm_sregs* sregs;
+        sregs = malloc(sizeof(struct kvm_sregs));
+        if(sregs == NULL || ioctl(vcpu_fd, KVM_GET_SREGS, sregs) < 0) {
+                return NULL;
+        }
+        return sregs;
 }
 
 void kvm_print_vcpu_regs(struct kvm_regs* regs, struct kvm_sregs* sregs) {
@@ -47,26 +83,3 @@ void kvm_print_vcpu_regs(struct kvm_regs* regs, struct kvm_sregs* sregs) {
 	printf("ss: 0x%llx\n", sregs->ss.base);
 	printf("---------------\n");
 }
-
-struct kvm_regs* kvm_get_vcpu_regs(int vcpu_fd) {
-	struct kvm_regs* regs;
-	regs = malloc(sizeof(struct kvm_regs));
-	if(regs == NULL || ioctl(vcpu_fd, KVM_GET_REGS, regs) < 0) {
-		return NULL;
-	}
-	return regs;
-}
-
-struct kvm_sregs* kvm_get_vcpu_sregs(int vcpu_fd) {
-        struct kvm_sregs* sregs;
-        sregs = malloc(sizeof(struct kvm_sregs));
-        if(sregs == NULL || ioctl(vcpu_fd, KVM_GET_SREGS, sregs) < 0) {
-                return NULL;
-        }
-        return sregs;
-}
-
-
-
-
-

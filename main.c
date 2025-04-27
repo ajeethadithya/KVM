@@ -7,7 +7,7 @@
 #include "mem.h"
 
 int main(void) {
-	int api_version;
+	int api_version, ret;
 	int kvm_fd, vm_fd, vcpu_fd;
 	void *mem_addr;
 	struct kvm_regs* regs = NULL;
@@ -59,6 +59,7 @@ int main(void) {
 		perror("Failed to get the vCPU registers");
 		goto out;
 	}
+
 	/* Get the vCPU system registers */
         sregs = kvm_get_vcpu_sregs(vcpu_fd);
         if(sregs == NULL) {
@@ -66,13 +67,24 @@ int main(void) {
                 goto out;
         }
 
-	/* Print the vCPU registers */
-	kvm_print_vcpu_regs(regs, sregs);
+	ret = kvm_initialize_region(vm_fd, mem_addr);
+	if(ret < 0) {
+		perror("Failed to initialize user memory region");
+		goto out;
+	}
 
-	printf("kvm_fd: %d\n", kvm_fd);
 	printf("API version: %d\n", api_version);
 	printf("vm_fd: %d\n", vm_fd);
 	printf("vcpu_fd: %d\n", vcpu_fd);
+
+	/* Print the vCPU registers */
+        kvm_print_vcpu_regs(regs, sregs);
+
+	printf("slot: %u\n", region.slot);
+	printf("flags: %u\n", region.flags);
+	printf("guest_phys_addr: 0x%llx\n", region.guest_phys_addr);
+	printf("Memory_size: %lld\n", region.memory_size);
+
 	printf("Success\n");
 	rc = EXIT_SUCCESS;
 out:
