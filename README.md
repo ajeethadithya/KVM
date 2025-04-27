@@ -1,1 +1,1 @@
-Interacting with the KVM kernel module in linux
+Interacting with the Linux KVM kernel module to create virtual machines.

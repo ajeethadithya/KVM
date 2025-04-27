@@ -1,7 +1,16 @@
+EXEC = main
+SRC = main.c kvm.c mem.c
+
 all:
-	@gcc main.c kvm.c mem.c -o main
-	@echo "Successfully compiled!"
+	@gcc $(SRC) -o $(EXEC)
+install: all
+	@sudo mv $(EXEC) /usr/local/bin/$(EXEC)
 run:
-	@./main
+	@if [ ! -f /usr/local/bin/$(EXEC) ]; then \
+		echo "Program $(EXEC) is not installed. Please run 'make install' first."; \
+	else \
+		/usr/local/bin/$(EXEC); \
+	fi
 clean:
-	@rm -f main
+	@sudo rm -f /usr/local/bin/$(EXEC)
+uninstall: clean

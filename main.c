@@ -39,7 +39,7 @@ int main(void) {
 	/* Create a vCPU */
 	vcpu_fd = kvm_create_vcpu(vm_fd);
 	if(vcpu_fd < 0) {
-		perror("Failed to create a VCPU");
+		perror("Failed to create a vCPU");
 		goto out;
 	}	
 
