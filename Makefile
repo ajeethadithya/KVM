@@ -1,16 +1,20 @@
 EXEC = main
 SRC = main.c kvm.c mem.c
 
-all:
+all: clean
 	@gcc $(SRC) -o $(EXEC)
-install: all
 	@sudo mv $(EXEC) /usr/local/bin/$(EXEC)
+
+install: all
+
 run:
 	@if [ ! -f /usr/local/bin/$(EXEC) ]; then \
-		echo "Program $(EXEC) is not installed. Please run 'make install' first."; \
+		echo "Program $(EXEC) is not installed. Please run 'make' or 'make install' first."; \
 	else \
 		/usr/local/bin/$(EXEC); \
 	fi
+
 clean:
 	@sudo rm -f /usr/local/bin/$(EXEC)
+
 uninstall: clean
